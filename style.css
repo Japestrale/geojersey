@@ -20,27 +20,31 @@ body {
 #map-canvas-wrap {
 	position: relative;
 }
-.logo {
+#logo {
 	position: absolute;
 	top: 20px;
 	left: 20px;
 	z-index: 2;
+	width: 237px;
 }
 
 #map-canvas {
-	width: 400px;
-	height: 300px;
+	width: 364px;
+	height: 273px;
 }
-#resize-map {
+#resize-map, #hide-map {
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	padding: 5px;
+	padding: 10px;
 	background: #AAA; /* Fallback */
 	background: rgba(0,0,0,0.3);
 	cursor: pointer;
 }
-#place-guess, #result, #new-round {
+#hide-map, #phone-info {
+	display: none;
+}
+#place-guess, #result, #new-guess, #score-info, #new-round {
 	background: #65C5E9;
 	color: #FFF;
 	padding: 20px;
@@ -59,14 +63,13 @@ body {
 	float: left;
 }
 
-#new-round {
+#new-guess, #new-round {
 	width: 50%;
 	float: right;
 	background: #308aac;
 	padding-bottom: 21px;
 	display: none;
 }
-
 p, button {
 	margin: 0
 }
@@ -76,7 +79,44 @@ p, button {
   outline-style: none;
 }
 
+/* Phones */
 
+/* For the time being just hide the box so you can't guess */
+/* I'll fix this later */
+@media (max-width: 767px) {
+	
+	#phone-info {
+		display: block;
+		background: #65C5E9;
+		color: #FFF;
+		padding: 20px;
+		border: none;
+		width: 100%;
+		font-size: 15px;
+		position: absolute;
+		top: 100px;
+		z-index: 2;
+	}
+	#logo {
+		width: 150px;
+	}
+	#info-container {
+		display: none; 
+		width: 100%;
+		top: 0;
+		right: 0;	
+	}
+	#map-canvas {
+		width: 100%;
+	}
+	#resize-map {
+		display: none;
+	}
+	#hide-map {
+		display: block;
+	}
+
+}
 
 /* --------------------------------------------------
 	Icons

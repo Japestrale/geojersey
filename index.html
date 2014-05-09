@@ -4,12 +4,12 @@
 	<meta charset="UTF-8">
 	<title>Geojersey - Guess where you are!</title>
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-	<meta name="author" content="James Mallon, Jack O'Connor, Tom Luce, Tom Hacquoil" />
+	<meta name="author" content="Jack O'Connor, James Mallon, Tom Luce, Tom Hacquoil" />
 	
 	<link rel="stylesheet" href="style.css">
 
 	<!-- Google Maps API Include -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhHfPCLlmFrT2YcnOAiuF9cBHfbNYhgVw&sensor=true&libraries=geometry"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhHfPCLlmFrT2YcnOAiuF9cBHfbNYhgVw&sensor=true&libraries=geometry"></script>
 
     <!-- JQuery Include -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -31,22 +31,37 @@
 
 <body>
 
-<img src="images/geojersey_logo.png" alt="logo" class="logo" />
+	<img src="images/geojersey_logo.png" alt="logo" id="logo" />
+	
+	<div id="phone-info">
+		<p>Small screen functionality coming soon...</p>
+		<p>In the meantime please use a tablet or PC</p>
+	</div>
+	<div id="info-container">
+		
+		<p id="score-info">
+			<span id="guesses"></span>/<span id="max-guesses"></span>
+			&nbsp;&nbsp;
+			Score: <span id="score"></span>
+			&nbsp;&nbsp;
+			Best: <span id="best-score">N/A</span>
+		</p>
 
-<div id="info-container">
-	
-	<div id="map-canvas-wrap">
-	
-		<div id="map-canvas"></div>
-		<i id="resize-map" class="batch" data-icon="&#xF0A5;"></i>
+		<div id="map-canvas-wrap">
+		
+			<div id="map-canvas"></div>
+			<i id="resize-map" class="batch" data-icon="&#xF0A5;"></i>
+			<i id="hide-map" class="batch" data-icon="&#xF0A5;"></i>
+			<!-- <img id="resize-map" src="images/icon-enlarge.svg" alt="Enlarge Map"> -->
+		</div>
+
+		<button id="place-guess">Guess Location</button>
+		<button id="new-guess">New Location</button>
+		<button id="new-round">New Round</button>
+		
 	</div>
 
-	<button id="place-guess">Guess Location</button>
-	<button id="new-round">New Round</button>
-	
-</div>
-
-<div id="pano"</div>
+	<div id="pano"</div>
 
 </body>
 

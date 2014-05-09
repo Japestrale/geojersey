@@ -1,153 +1,220 @@
-var map;
-var panorama;
-var marker;
-var locationPosition;
-var guessPosition;
-var jerseyPosition = new google.maps.LatLng(49.21, -2.135);
-var geocoder = new google.maps.Geocoder();
-var geocoderIndex = 0;
-var distance;
-var markerListener;
-
-var pinColor = "2F76EE"; // a random blue color that i picked
-var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor);
-
-// Initialize the maps on window load
-google.maps.event.addDomListener(window, 'load', initialize);
-
-// Returns a random location as a google maps object
-function getRandomLocation() {
-
-	var lngMin = -2.255;
-  var lngMax = -2.024;
-  var latMin = 49.173;
-  var latMax = 49.258;
-
-  var lngDiff = lngMax - lngMin;
-  var latDiff = latMax - latMin;
-
-  var lat = latMin + ( Math.random() * latDiff );
-  var lng = lngMin + ( Math.random() * lngDiff );
-
-  return new google.maps.LatLng(lat, lng);
-}
-
-// Initialize the two maps
-function initialize() {
-
-	// Create the map and center it on Jersey
-	var mapOptions = {
-        center: jerseyPosition,
-        zoom: 11,
-        minZoom: 11,
-        streetViewControl: false,
-        overviewMapControl: false,
-        mapTypeControl: false
-	};	
-	map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
-
-	// Find a random location
-	locationPosition = getRandomLocation();
-	
-	// Run geocoder
-	runGeocoder();
-}
-
-function runGeocoder() {
-
-	geocoder.geocode({'latLng': locationPosition}, function(results, status) {
-
-    if (status == google.maps.GeocoderStatus.OK) {
-
-      if (results[1]) {
-
-      	//console.log('SUCCESS');
-
-        locationPosition = results[0].geometry.location;	
-
-        // Create the panorama at this location
-				var panoramaOptions = {
-				  position: locationPosition,
-				  pov: {
-				    heading: 34,
-				    pitch: 0
-				  },
-				  addressControl: false,
-				  panControl: false,
-				  zoomControl: false,
-				  clickToGo: false,
-				  disableDefaultUI: true
-				};
-
-				panorama = new google.maps.StreetViewPanorama(document.getElementById("pano"), panoramaOptions);
-
-				// Check to see that the panorama loaded properly and if not re-run
-				setTimeout(function(){ 
-					if ( panorama.getPano() == undefined ) {
-	
-						// Find another random location
-						locationPosition = getRandomLocation();
-
-						geocoderIndex++;
-						setTimeout(runGeocoder,geocoderIndex*200);
-					}
-				}, 1000);
-				
-				//map.setStreetView(panorama);
-
-				markerListener = google.maps.event.addListener(map, 'click', function(event) {
-            mapZoom = map.getZoom();
-            setTimeout(function(){placeMarker(event.latLng);}, 200);
-        });
-
-
-      } else {
-
-      	// console.log('Geocoder failed due to: ' + status);
-      	geocoderIndex++;
-      	locationPosition = getRandomLocation();
-      	setTimeout(runGeocoder,geocoderIndex*200);
-
-      }
-
-    } else {
-
-      // console.log('Geocoder failed due to: ' + status);
-      geocoderIndex++;
-      locationPosition = getRandomLocation();
-      setTimeout(runGeocoder,geocoderIndex*200);
-
-    }
-  });
-}
-
-function placeMarker(location) {
-
-	if (mapZoom == map.getZoom()) {
-
-		if ( marker ) {
-
-	    marker.setPosition(location);
-	    marker.setAnimation(google.maps.Animation.DROP);
-	    marker.setMap(map);
-
-	  } else {
-
-	    marker = new google.maps.Marker({
-	      position: location,
-	      map: map,
-	      animation: google.maps.Animation.DROP
-	    });
-
-	  }
-	}
-}
-
 $(document).ready(function() {
 
-	// Reload the page in order to give the user a new round
-	$('#new-round').on('click', function() {
-		// location.reload();
+	var map;
+	var mapHeightSmall = 273;
+	var mapHeightLarge = 506;
+	var mapWidthSmall = 346;
+	var mapWidthLarge = 728;
+	var panorama;
+	var marker;
+
+	var locationPosition;
+	var guessPosition;
+	var jerseyPosition = new google.maps.LatLng(49.21, -2.135);
+
+	var geocoder = new google.maps.Geocoder();
+	var geocoderIndex = 0;
+
+	var distance;
+	var markerListener;
+
+	var pinColor = "2F76EE"; // a random blue color that i picked
+	var pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor);
+
+	// Define the defaults and set them in the page
+	var maxGuesses = 6;
+	var guesses = 0;
+	var score = 0;
+	var bestScore = null;
+
+	$('#max-guesses').text(maxGuesses);
+	$('#guesses').text(guesses);
+	$('#score').text(score);
+
+	// Initialize the maps on window load
+	google.maps.event.addDomListener(window, 'load', initialize);
+
+	// If we've got localstorage available
+	if ( typeof(Storage) !== "undefined" ) {
+
+		// console.log( localStorage.getItem("best-score") );
+
+		// If the user has a defined best score then retrieve it and update the view
+		if ( localStorage.getItem("best-score") ) {
+
+			bestScore = parseInt(localStorage.getItem("best-score"));
+			$('#best-score').text( bestScore.number_with_delimiter() );
+			// console.log(bestScore);
+
+	 	} 
+		
+	} else {
+	  alert('The browser you are using is outdated.\n\nPlease upgrade to enable the scoring system.\n\nI recommend downloading Google Chrome');
+	}
+
+	// Updates the score information above the map
+	function updateScoreInfo() {
+		// console.log(score);
+		$('#score').text(score.number_with_delimiter());
+		$('#guesses').text(guesses);
+
+	}
+
+	function saveScoreInfo() {
+		localStorage.setItem("geojersey_guesses", guesses);
+	  localStorage.setItem("geojersey_score", score);
+	  localStorage.setItem("geojersey_midround", true);
+	}
+
+
+	// Returns a random location as a google maps object
+	function getRandomLocation() {
+
+		var lngMin = -2.255;
+	  var lngMax = -2.024;
+	  var latMin = 49.173;
+	  var latMax = 49.258;
+
+	  var lngDiff = lngMax - lngMin;
+	  var latDiff = latMax - latMin;
+
+	  var lat = latMin + ( Math.random() * latDiff );
+	  var lng = lngMin + ( Math.random() * lngDiff );
+
+	  return new google.maps.LatLng(lat, lng);
+	}
+
+	// Initialize the two maps
+	function initialize() {
+
+		// Create the map and center it on Jersey
+		var mapOptions = {
+	        center: jerseyPosition,
+	        zoom: 11,
+	        minZoom: 11,
+	        streetViewControl: false,
+	        overviewMapControl: false,
+	        mapTypeControl: false
+		};	
+		map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+
+		// Find a random location
+		locationPosition = getRandomLocation();
+		
+		// Run geocoder
+		runGeocoder();
+	}
+
+	function runGeocoder() {
+
+		geocoder.geocode({'latLng': locationPosition}, function(results, status) {
+
+	    if (status == google.maps.GeocoderStatus.OK) {
+
+	      if (results[1]) {
+
+	      	//console.log('SUCCESS');
+
+	        locationPosition = results[0].geometry.location;	
+
+	        // Create the panorama at this location
+					var panoramaOptions = {
+					  position: locationPosition,
+					  pov: {
+					    heading: 34,
+					    pitch: 0
+					  },
+					  addressControl: false,
+					  panControl: false,
+					  zoomControl: false,
+					  clickToGo: false,
+					  disableDefaultUI: true
+					};
+
+					panorama = new google.maps.StreetViewPanorama(document.getElementById("pano"), panoramaOptions);
+
+					// Check to see that the panorama loaded properly and if not re-run
+					setTimeout(function(){ 
+
+						// The panorama didn;t load properly
+						if ( panorama.getPano() == undefined ) {
+		
+							// Find another random location
+							locationPosition = getRandomLocation();
+
+							geocoderIndex++;
+							setTimeout(runGeocoder,geocoderIndex*200);
+
+						} else {
+
+							// The panorama loaded properly
+							
+							// Reset the geocoder index
+							geocoderIndex = 0;
+
+							//map.setStreetView(panorama);
+
+							// Add an event listener to the map that places a marker on click
+							markerListener = google.maps.event.addListener(map, 'click', function(event) {
+			            mapZoom = map.getZoom();
+			            setTimeout(function(){placeMarker(event.latLng);}, 200);
+			        });
+
+
+						}
+					}, 1000);
+
+	      } else {
+
+	      	// Status is OK but no results...
+
+	      	// console.log('Geocoder failed due to: ' + status);
+	      	geocoderIndex++;
+	      	locationPosition = getRandomLocation();
+	      	setTimeout(runGeocoder,geocoderIndex*200);
+
+	      }
+
+	    } else {
+
+	    	// Status is not OK, probalby due to an invalid location
+
+	      // console.log('Geocoder failed due to: ' + status);
+	      geocoderIndex++;
+	      locationPosition = getRandomLocation();
+	      setTimeout(runGeocoder,geocoderIndex*200);
+
+	    }
+	  });
+	}
+
+	function placeMarker(location) {
+
+		if (mapZoom == map.getZoom()) {
+
+			if ( marker ) {
+
+		    marker.setPosition(location);
+		    marker.setAnimation(google.maps.Animation.DROP);
+		    marker.setMap(map);
+
+		  } else {
+
+		    marker = new google.maps.Marker({
+		      position: location,
+		      map: map,
+		      animation: google.maps.Animation.DROP
+		    });
+
+		  }
+		}
+	}
+
+
+	// Reset the 
+	$('#new-guess').on('click', newGuess);
+
+	function newGuess() {
 
 		// Get a new location
 		locationPosition = getRandomLocation();
@@ -182,6 +249,9 @@ $(document).ready(function() {
     // Add the place guess button
     $('#place-guess').show();
 
+    // Hide the new guess button
+    $('#new-guess').hide();
+
     // Hide the new round button
     $('#new-round').hide();
 
@@ -191,8 +261,7 @@ $(document).ready(function() {
     // Show the resize button
     $('#resize-map').show();
 
-
-	});
+	}
 
 	// What to do if the user places a guess
 	$('#place-guess').on('click', function() {
@@ -221,7 +290,7 @@ $(document).ready(function() {
     });
 
 		// Resize our map and zoom in and center on the two markers
-    $('#map-canvas').animate({width: 800, height: 600}, 200, function() {
+    $('#map-canvas').animate({width: mapWidthLarge, height: mapHeightLarge}, 200, function() {
 
     	triggerResize();
 
@@ -248,20 +317,95 @@ $(document).ready(function() {
     // Hide the place guess button
     $('#place-guess').hide();
 
-    // Show the new round button
-    $('#new-round').show();
+    // Show the new guess button
+    $('#new-guess').show();
 
     // Hide the resize button
     $('#resize-map').hide();
+
+		// Update the number of guesses
+	  guesses++;
+
+		// Increase the total score value so far
+	  score += distance;
+
+	 	// Update the values in the info pane
+	  updateScoreInfo();
+
+    // If the user is mid-round then update their info
+    if (guesses < maxGuesses) {
+
+	    // Save the values to localstorage
+	    saveScoreInfo();
+
+	  } else {
+			
+			// What to do if we already have a best score
+	  	if ( bestScore !== null ) {
+
+	  		// Check to see if this score beats the old best one 
+	  		if ( score < bestScore ) {
+
+	  			// If it does then set it in local storage and update the view
+	  			bestScore = score;
+	  			localStorage.setItem("best-score", bestScore);
+	  			$('#best-score').text( bestScore.number_with_delimiter() );
+
+	  		}
+
+	  	} else {
+
+	  		bestScore = score;
+	  		localStorage.setItem("best-score", bestScore);
+	  		$('#best-score').text( bestScore.number_with_delimiter() );
+
+	  	}
+
+			$('#new-guess').hide();
+			$('#new-round').show();	
+	  	// alert("You got " + score + " points");
+			
+
+	  }
+
+	});
+
+	$('#new-round').click(function(){
+
+		// Reset our localstorage values
+	  localStorage.removeItem('score');
+	  localStorage.removeItem('guesses');
+
+	  // Reset the actual values
+	  guesses = 0;
+	  score = 0;
+
+	  // Reset the values in the info pane
+	  updateScoreInfo();
+
+	  newGuess();
+	  // 			// Show the place guess button
+   //  	$('#place-guess').show();
+
+	  // // Show the place guess button
+   //  $('#place-guess').show();
+
+
+	  // getRandomLocation();
+	  // runGeocoder();
 
 	});
 
 	$('#resize-map').click(function(){
 
-		if ($('#map-canvas').height() == 300) {
-			makeMapLarge();    
+		// console.log($('#map-canvas').height());
+
+		if ($('#map-canvas').height() == mapHeightSmall) {
+			makeMapLarge();  
+			// console.log('Map is small');  
 		} else {
 			makeMapSmall();
+			// console.log('Map is large');  
 	  }
 
 	});
@@ -272,7 +416,7 @@ $(document).ready(function() {
 
 	function makeMapSmall() {
 
-		$('#map-canvas').animate({width: 400, height: 300}, 200, function(){
+		$('#map-canvas').animate({ width: mapWidthSmall, height: mapHeightSmall }, 200, function(){
 	    	
     	triggerResize();
     	
@@ -287,7 +431,7 @@ $(document).ready(function() {
 
 	function makeMapLarge() {
 
-	  $('#map-canvas').animate({width: 800, height: 600}, 200, function() {
+	  $('#map-canvas').animate({width: mapWidthLarge, height: mapHeightLarge}, 200, function() {
 	  	
 	  	triggerResize()
 
