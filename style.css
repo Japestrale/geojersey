@@ -108,7 +108,7 @@ p, button {
 		right: 0;	
 	}
 	#map-canvas {
-		width: 100%;
+		width: 100% !important;
 	}
 	#resize-map {
 		display: none;
