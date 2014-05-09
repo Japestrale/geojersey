@@ -41,7 +41,7 @@ body {
 	background: rgba(0,0,0,0.3);
 	cursor: pointer;
 }
-#hide-map, #phone-info {
+#hide-map, #phone-info, #show-map {
 	display: none;
 }
 #place-guess, #result, #new-guess, #score-info, #new-round {
@@ -86,7 +86,8 @@ p, button {
 @media (max-width: 767px) {
 	
 	#phone-info {
-		display: block;
+		/*display: block;*/
+		display: none;
 		background: #65C5E9;
 		color: #FFF;
 		padding: 20px;
@@ -101,7 +102,7 @@ p, button {
 		width: 150px;
 	}
 	#info-container {
-		display: none; 
+		display: none;
 		width: 100%;
 		top: 0;
 		right: 0;	
@@ -114,6 +115,23 @@ p, button {
 	}
 	#hide-map {
 		display: block;
+		color: white;
+	}
+	#show-map {
+		display: block;
+		position: absolute;
+		top: 20px;
+		left: 190px;
+		z-index: 2;
+		padding: 10px;
+		background: #AAA; /* Fallback */
+		background: rgba(0,0,0,0.3);
+		cursor: pointer;
+		height: 54px;
+		color: white;
+		font-size: 30px;
+		font-weight: 100;
+		background: #2AC5FF;
 	}
 
 }

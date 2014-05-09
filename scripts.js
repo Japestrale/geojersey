@@ -211,7 +211,7 @@ $(document).ready(function() {
 	}
 
 
-	// Reset the 
+	// New guess saves score and updates total, then chooses new location
 	$('#new-guess').on('click', newGuess);
 
 	function newGuess() {
@@ -261,6 +261,14 @@ $(document).ready(function() {
     // Show the resize button
     $('#resize-map').show();
 
+    // If we're on a mobile then we're goign to want to hide the map temporarily
+    if ( $('#hide-map').is(':visible') ) {
+
+    	$('#info-container').slideToggle(200);
+    	triggerResize();
+
+    }
+
 	}
 
 	// What to do if the user places a guess
@@ -289,12 +297,10 @@ $(document).ready(function() {
   		icon: pinImage
     });
 
-		// Resize our map and zoom in and center on the two markers
-    $('#map-canvas').animate({width: mapWidthLarge, height: mapHeightLarge}, 200, function() {
+		// If we're on a small screen then we dont want to make the map large
+		if ( $('#hide-map').is(':visible') ) {
 
-    	triggerResize();
-
-    	//  Make an array of the LatLng's of the markers you want to show
+			//  Make an array of the LatLng's of the markers you want to show
 			var LatLngList = new Array (guessPosition, locationPosition);
 
 			//  Create a new viewpoint bound
@@ -309,7 +315,31 @@ $(document).ready(function() {
 			map.fitBounds(bounds);
 			map.setCenter(bounds.getCenter());
 
-		});
+		} else {
+
+			// Resize our map and zoom in and center on the two markers
+	    $('#map-canvas').animate({width: mapWidthLarge, height: mapHeightLarge}, 200, function() {
+
+	    	triggerResize();
+
+	    	//  Make an array of the LatLng's of the markers you want to show
+				var LatLngList = new Array (guessPosition, locationPosition);
+
+				//  Create a new viewpoint bound
+				var bounds = new google.maps.LatLngBounds();
+
+				//  Go through each and increase the bounds to take this point
+				for (var i = 0, LtLgLen = LatLngList.length; i < LtLgLen; i++) {
+				  bounds.extend(LatLngList[i]);
+				}
+
+				// Fit these bounds to the map
+				map.fitBounds(bounds);
+				map.setCenter(bounds.getCenter());
+
+			});
+
+		}
 
 		// Add and indicator of how far away they were
     $('#map-canvas-wrap').append('<p id="result">You were ' + distance.number_with_delimiter() + ' metres away</p>');
@@ -321,7 +351,7 @@ $(document).ready(function() {
     $('#new-guess').show();
 
     // Hide the resize button
-    $('#resize-map').hide();
+    // $('#resize-map').hide();
 
 		// Update the number of guesses
 	  guesses++;
@@ -369,7 +399,9 @@ $(document).ready(function() {
 	  }
 
 	});
+	
 
+	// Clicking the new round button resets everything and starts a new game
 	$('#new-round').click(function(){
 
 		// Reset our localstorage values
@@ -384,18 +416,11 @@ $(document).ready(function() {
 	  updateScoreInfo();
 
 	  newGuess();
-	  // 			// Show the place guess button
-   //  	$('#place-guess').show();
-
-	  // // Show the place guess button
-   //  $('#place-guess').show();
-
-
-	  // getRandomLocation();
-	  // runGeocoder();
 
 	});
 
+
+	// Clicking thes resize button on the map on dekstops and tablets
 	$('#resize-map').click(function(){
 
 		// console.log($('#map-canvas').height());
@@ -407,6 +432,33 @@ $(document).ready(function() {
 			makeMapSmall();
 			// console.log('Map is large');  
 	  }
+
+	});
+
+
+	// For mobiles hide map when user clicks button
+	$('#hide-map').click(function(){
+
+		$('#info-container').slideToggle(200);
+		triggerResize();
+		if ( marker ) {
+  		map.setCenter(marker.getPosition());
+  	} else {
+			map.setCenter(jerseyPosition);
+		}
+
+	});
+
+	// For mobiles show map when user clicks button next to logo
+	$('#show-map').click(function(){
+
+		$('#info-container').slideToggle(200);
+		triggerResize();
+		if ( marker ) {
+  		map.setCenter(marker.getPosition());
+  	} else {
+			map.setCenter(jerseyPosition);
+		}
 
 	});
 
