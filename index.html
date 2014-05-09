@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Geojersey - Guess where you are!</title>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<meta name="author" content="James Mallon, Jack O'Connor, Tom Luce, Tom Hacquoil" />
+	
+	<link rel="stylesheet" href="style.css">
+
+	<!-- Google Maps API Include -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhHfPCLlmFrT2YcnOAiuF9cBHfbNYhgVw&sensor=true&libraries=geometry"></script>
+
+    <!-- JQuery Include -->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+	<script src="scripts.js"></script>
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-50787396-1', 'geojersey.co.uk');
+	  ga('send', 'pageview');
+
+	</script>
+
+</head>
+
+<body>
+
+<img src="images/geojersey_logo.png" alt="logo" class="logo" />
+
+<div id="info-container">
+	
+	<div id="map-canvas-wrap">
+	
+		<div id="map-canvas"></div>
+		<i id="resize-map" class="batch" data-icon="&#xF0A5;"></i>
+	</div>
+
+	<button id="place-guess">Guess Location</button>
+	<button id="new-round">New Round</button>
+	
+</div>
+
+<div id="pano"</div>
+
+</body>
+
+</html>
