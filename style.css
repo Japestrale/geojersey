@@ -9,16 +9,9 @@ html {
 	box-sizing: border-box;         /* Opera/IE 8+ */
 }
 body { 
-	height: 100%; margin: 0; padding: 0 
-}
-#info-container { 
-	position: absolute; 
-	top: 20px; 
-	right: 20px;
-	z-index: 2;
-}
-#map-canvas-wrap {
-	position: relative;
+	height: 100%; 
+	margin: 0; 
+	padding: 0 
 }
 #logo {
 	position: absolute;
@@ -27,23 +20,74 @@ body {
 	z-index: 2;
 	width: 237px;
 }
+#info-container { 
+	position: absolute; 
+	top: 20px; 
+	right: 20px;
+	z-index: 2;
+}
 
+#map-canvas-wrap {
+	position: relative;
+}
 #map-canvas {
 	width: 364px;
 	height: 273px;
 }
-#resize-map, #hide-map {
+
+#leaderboard-wrap {
 	position: absolute;
-	bottom: 0;
-	left: 0;
-	padding: 10px;
-	background: #AAA; /* Fallback */
-	background: rgba(0,0,0,0.3);
-	cursor: pointer;
-}
-#hide-map, #phone-info, #show-map {
+	z-index: 3;
+	background: #FFF;
+	top: 0;
+	height: 100%;
+	width: 100%;
+	overflow-y: scroll;
+	/*opacity: 0.9;*/
 	display: none;
 }
+#leaderboard {
+	padding-left: 100px;
+}
+#leaderboard li {
+	position: relative;
+	margin-bottom: 20px;
+}
+#leaderboard li img {
+	position: absolute;
+	top: -5px;
+	left: -70px;
+	height: 30px;
+	width: 30px;
+	-webkit-border-radius: 50px;
+	        border-radius: 50px;
+}
+#post-score, #login, #show-leaderboard, #resize-map, #hide-map, #hide-leaderboard {
+	position: absolute;
+	padding: 10px;
+	background: #AAA; /* Fallback */
+	background: rgba(0,0,0,0.5);
+	cursor: pointer;
+	z-index: 4;
+	text-decoration: none;
+	color: white;
+}
+#post-score, #login, #show-leaderboard {
+	bottom: 0;
+	right: 0;
+}
+#resize-map, #hide-map {
+	bottom: 0;
+	left: 0;
+}
+#hide-leaderboard {
+	top: 0;
+	right: 0;
+}
+#hide-map, #show-map, #post-score, #login, #hide-leaderboard {
+	display: none;
+}
+
 #place-guess, #result, #new-guess, #score-info, #new-round {
 	background: #65C5E9;
 	color: #FFF;
@@ -79,25 +123,23 @@ p, button {
   outline-style: none;
 }
 
+#twitter {
+	position: absolute;
+	bottom: 20px;
+	right: 20px;
+	height: 40px;
+}
+#linkedin {
+	position: absolute;
+	bottom: 20px;
+	right: 82px;
+	height: 40px;
+}
+
 /* Phones */
 
-/* For the time being just hide the box so you can't guess */
-/* I'll fix this later */
 @media (max-width: 767px) {
 	
-	#phone-info {
-		/*display: block;*/
-		display: none;
-		background: #65C5E9;
-		color: #FFF;
-		padding: 20px;
-		border: none;
-		width: 100%;
-		font-size: 15px;
-		position: absolute;
-		top: 100px;
-		z-index: 2;
-	}
 	#logo {
 		width: 150px;
 	}
@@ -125,13 +167,16 @@ p, button {
 		z-index: 2;
 		padding: 10px;
 		background: #AAA; /* Fallback */
-		background: rgba(0,0,0,0.3);
+		background: rgba(0,0,0,0.5r);
 		cursor: pointer;
 		height: 54px;
 		color: white;
 		font-size: 30px;
 		font-weight: 100;
 		background: #2AC5FF;
+	}
+	#twitter, #linkedin {
+		height: 20px;
 	}
 
 }

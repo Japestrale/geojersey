@@ -1,3 +1,14 @@
+// Prints a number with a delimiter
+Number.prototype.number_with_delimiter = function(delimiter) {
+	var number = this + '', delimiter = delimiter || ',';
+	var split = number.split('.');
+	split[0] = split[0].replace(
+			/(\d)(?=(\d\d\d)+(?!\d))/g,
+			'$1' + delimiter
+	);
+	return split.join('.');    
+};
+
 $(document).ready(function() {
 
 	var map;
@@ -46,10 +57,10 @@ $(document).ready(function() {
 			$('#best-score').text( bestScore.number_with_delimiter() );
 			// console.log(bestScore);
 
-	 	} 
+		} 
 		
 	} else {
-	  alert('The browser you are using is outdated.\n\nPlease upgrade to enable the scoring system.\n\nI recommend downloading Google Chrome');
+		alert('The browser you are using is outdated.\n\nPlease upgrade to enable the scoring system.\n\nI recommend downloading Google Chrome');
 	}
 
 	// Updates the score information above the map
@@ -62,8 +73,8 @@ $(document).ready(function() {
 
 	function saveScoreInfo() {
 		localStorage.setItem("geojersey_guesses", guesses);
-	  localStorage.setItem("geojersey_score", score);
-	  localStorage.setItem("geojersey_midround", true);
+		localStorage.setItem("geojersey_score", score);
+		localStorage.setItem("geojersey_midround", true);
 	}
 
 
@@ -71,17 +82,17 @@ $(document).ready(function() {
 	function getRandomLocation() {
 
 		var lngMin = -2.255;
-	  var lngMax = -2.024;
-	  var latMin = 49.173;
-	  var latMax = 49.258;
+		var lngMax = -2.024;
+		var latMin = 49.173;
+		var latMax = 49.258;
 
-	  var lngDiff = lngMax - lngMin;
-	  var latDiff = latMax - latMin;
+		var lngDiff = lngMax - lngMin;
+		var latDiff = latMax - latMin;
 
-	  var lat = latMin + ( Math.random() * latDiff );
-	  var lng = lngMin + ( Math.random() * lngDiff );
+		var lat = latMin + ( Math.random() * latDiff );
+		var lng = lngMin + ( Math.random() * lngDiff );
 
-	  return new google.maps.LatLng(lat, lng);
+		return new google.maps.LatLng(lat, lng);
 	}
 
 	// Initialize the two maps
@@ -89,12 +100,12 @@ $(document).ready(function() {
 
 		// Create the map and center it on Jersey
 		var mapOptions = {
-	        center: jerseyPosition,
-	        zoom: 11,
-	        minZoom: 11,
-	        streetViewControl: false,
-	        overviewMapControl: false,
-	        mapTypeControl: false
+					center: jerseyPosition,
+					zoom: 11,
+					minZoom: 11,
+					streetViewControl: false,
+					overviewMapControl: false,
+					mapTypeControl: false
 		};	
 		map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
 
@@ -109,26 +120,27 @@ $(document).ready(function() {
 
 		geocoder.geocode({'latLng': locationPosition}, function(results, status) {
 
-	    if (status == google.maps.GeocoderStatus.OK) {
+			if (status == google.maps.GeocoderStatus.OK) {
 
-	      if (results[1]) {
+				if (results[1]) {
 
-	      	//console.log('SUCCESS');
+					//console.log('SUCCESS');
 
-	        locationPosition = results[0].geometry.location;	
+					locationPosition = results[0].geometry.location;	
 
-	        // Create the panorama at this location
+					// Create the panorama at this location
 					var panoramaOptions = {
-					  position: locationPosition,
-					  pov: {
-					    heading: 34,
-					    pitch: 0
-					  },
-					  addressControl: false,
-					  panControl: false,
-					  zoomControl: false,
-					  clickToGo: false,
-					  disableDefaultUI: true
+						position: locationPosition,
+						pov: {
+							heading: 34,
+							pitch: 0
+						},
+						addressControl: false,
+						panControl: false,
+						zoomControl: false,
+						clickToGo: false,
+						disableDefaultUI: true
+						// mode : 'webgl'
 					};
 
 					panorama = new google.maps.StreetViewPanorama(document.getElementById("pano"), panoramaOptions);
@@ -137,7 +149,7 @@ $(document).ready(function() {
 					setTimeout(function(){ 
 
 						// The panorama didn;t load properly
-						if ( panorama.getPano() == undefined ) {
+						if ( panorama.getPano() === undefined ) {
 		
 							// Find another random location
 							locationPosition = getRandomLocation();
@@ -156,36 +168,36 @@ $(document).ready(function() {
 
 							// Add an event listener to the map that places a marker on click
 							markerListener = google.maps.event.addListener(map, 'click', function(event) {
-			            mapZoom = map.getZoom();
-			            setTimeout(function(){placeMarker(event.latLng);}, 200);
-			        });
+									mapZoom = map.getZoom();
+									setTimeout(function(){placeMarker(event.latLng);}, 200);
+							});
 
 
 						}
 					}, 1000);
 
-	      } else {
+				} else {
 
-	      	// Status is OK but no results...
+					// Status is OK but no results...
 
-	      	// console.log('Geocoder failed due to: ' + status);
-	      	geocoderIndex++;
-	      	locationPosition = getRandomLocation();
-	      	setTimeout(runGeocoder,geocoderIndex*200);
+					// console.log('Geocoder failed due to: ' + status);
+					geocoderIndex++;
+					locationPosition = getRandomLocation();
+					setTimeout(runGeocoder,geocoderIndex*200);
 
-	      }
+				}
 
-	    } else {
+			} else {
 
-	    	// Status is not OK, probalby due to an invalid location
+				// Status is not OK, probalby due to an invalid location
 
-	      // console.log('Geocoder failed due to: ' + status);
-	      geocoderIndex++;
-	      locationPosition = getRandomLocation();
-	      setTimeout(runGeocoder,geocoderIndex*200);
+				// console.log('Geocoder failed due to: ' + status);
+				geocoderIndex++;
+				locationPosition = getRandomLocation();
+				setTimeout(runGeocoder,geocoderIndex*200);
 
-	    }
-	  });
+			}
+		});
 	}
 
 	function placeMarker(location) {
@@ -194,19 +206,19 @@ $(document).ready(function() {
 
 			if ( marker ) {
 
-		    marker.setPosition(location);
-		    marker.setAnimation(google.maps.Animation.DROP);
-		    marker.setMap(map);
+				marker.setPosition(location);
+				marker.setAnimation(google.maps.Animation.DROP);
+				marker.setMap(map);
 
-		  } else {
+			} else {
 
-		    marker = new google.maps.Marker({
-		      position: location,
-		      map: map,
-		      animation: google.maps.Animation.DROP
-		    });
+				marker = new google.maps.Marker({
+					position: location,
+					map: map,
+					animation: google.maps.Animation.DROP
+				});
 
-		  }
+			}
 		}
 	}
 
@@ -220,54 +232,54 @@ $(document).ready(function() {
 		locationPosition = getRandomLocation();
 
 		// Run the geocoder and update the streetview
-    runGeocoder();
+		runGeocoder();
 
-    // Remove any markers if we have them
-    if (marker) {
-    	marker.setMap(null);
-    	marker = null;
-    }
-    if (locationMarker) {
-    	locationMarker.setMap(null);
-    	locationMarker = null;
-    }
+		// Remove any markers if we have them
+		if (marker) {
+			marker.setMap(null);
+			marker = null;
+		}
+		if (locationMarker) {
+			locationMarker.setMap(null);
+			locationMarker = null;
+		}
 
-    // Reset the distance
-    if (distance) {
-    	distance = undefined;
-    }
+		// Reset the distance
+		if (distance) {
+			distance = undefined;
+		}
 
-    // Make map small
-    makeMapSmall();
+		// Make map small
+		makeMapSmall();
 
-    // Center map on Jersey
-    setTimeout(function(){ map.setCenter(jerseyPosition) }, 500);
+		// Center map on Jersey
+		setTimeout(function(){ map.setCenter(jerseyPosition); }, 500);
 
-    // Reset zoom
-    map.setZoom(11);
+		// Reset zoom
+		map.setZoom(11);
 
-    // Add the place guess button
-    $('#place-guess').show();
+		// Add the place guess button
+		$('#place-guess').show();
 
-    // Hide the new guess button
-    $('#new-guess').hide();
+		// Hide the new guess button
+		$('#new-guess').hide();
 
-    // Hide the new round button
-    $('#new-round').hide();
+		// Hide the new round button
+		$('#new-round').hide();
 
-    // Remove the distance display
-    $('#result').remove();
+		// Remove the distance display
+		$('#result').remove();
 
-    // Show the resize button
-    $('#resize-map').show();
+		// Show the resize button
+		$('#resize-map').show();
 
-    // If we're on a mobile then we're goign to want to hide the map temporarily
-    if ( $('#hide-map').is(':visible') ) {
+		// If we're on a mobile then we're goign to want to hide the map temporarily
+		if ( $('#hide-map').is(':visible') ) {
 
-    	$('#info-container').slideToggle(200);
-    	triggerResize();
+			$('#info-container').slideToggle(200);
+			triggerResize();
 
-    }
+		}
 
 	}
 
@@ -291,11 +303,11 @@ $(document).ready(function() {
 
 		// Add the actual location marker to the map
 		locationMarker = new google.maps.Marker({
-      position: locationPosition,
-      map: map,
-      animation: google.maps.Animation.DROP,
-  		icon: pinImage
-    });
+			position: locationPosition,
+			map: map,
+			animation: google.maps.Animation.DROP,
+			icon: pinImage
+		});
 
 		// If we're on a small screen then we dont want to make the map large
 		if ( $('#hide-map').is(':visible') ) {
@@ -308,7 +320,7 @@ $(document).ready(function() {
 
 			//  Go through each and increase the bounds to take this point
 			for (var i = 0, LtLgLen = LatLngList.length; i < LtLgLen; i++) {
-			  bounds.extend(LatLngList[i]);
+				bounds.extend(LatLngList[i]);
 			}
 
 			// Fit these bounds to the map
@@ -318,11 +330,11 @@ $(document).ready(function() {
 		} else {
 
 			// Resize our map and zoom in and center on the two markers
-	    $('#map-canvas').animate({width: mapWidthLarge, height: mapHeightLarge}, 200, function() {
+			$('#map-canvas').animate({width: mapWidthLarge, height: mapHeightLarge}, 200, function() {
 
-	    	triggerResize();
+				triggerResize();
 
-	    	//  Make an array of the LatLng's of the markers you want to show
+				//  Make an array of the LatLng's of the markers you want to show
 				var LatLngList = new Array (guessPosition, locationPosition);
 
 				//  Create a new viewpoint bound
@@ -330,7 +342,7 @@ $(document).ready(function() {
 
 				//  Go through each and increase the bounds to take this point
 				for (var i = 0, LtLgLen = LatLngList.length; i < LtLgLen; i++) {
-				  bounds.extend(LatLngList[i]);
+					bounds.extend(LatLngList[i]);
 				}
 
 				// Fit these bounds to the map
@@ -342,61 +354,64 @@ $(document).ready(function() {
 		}
 
 		// Add and indicator of how far away they were
-    $('#map-canvas-wrap').append('<p id="result">You were ' + distance.number_with_delimiter() + ' metres away</p>');
+		$('#map-canvas-wrap').append('<p id="result">You were ' + distance.number_with_delimiter() + ' metres away</p>');
 
-    // Hide the place guess button
-    $('#place-guess').hide();
+		// Hide the place guess button
+		$('#place-guess').hide();
 
-    // Show the new guess button
-    $('#new-guess').show();
+		// Show the new guess button
+		$('#new-guess').show();
 
-    // Hide the resize button
-    // $('#resize-map').hide();
+		// Hide the resize button
+		// $('#resize-map').hide();
 
 		// Update the number of guesses
-	  guesses++;
+		guesses++;
 
 		// Increase the total score value so far
-	  score += distance;
+		score += distance;
 
-	 	// Update the values in the info pane
-	  updateScoreInfo();
+		// Update the values in the info pane
+		updateScoreInfo();
 
-    // If the user is mid-round then update their info
-    if (guesses < maxGuesses) {
+		// If the user is mid-round then update their info
+		if (guesses < maxGuesses) {
 
-	    // Save the values to localstorage
-	    saveScoreInfo();
+			// Save the values to localstorage
+			saveScoreInfo();
 
-	  } else {
+		} else {
 			
 			// What to do if we already have a best score
-	  	if ( bestScore !== null ) {
+			if ( bestScore !== null ) {
 
-	  		// Check to see if this score beats the old best one 
-	  		if ( score < bestScore ) {
+				// Check to see if this score beats the old best one 
+				if ( score < bestScore ) {
 
-	  			// If it does then set it in local storage and update the view
-	  			bestScore = score;
-	  			localStorage.setItem("best-score", bestScore);
-	  			$('#best-score').text( bestScore.number_with_delimiter() );
+					// If it does then set it in local storage and update the view
+					bestScore = score;
+					localStorage.setItem("best-score", bestScore);
+					$('#best-score').text( bestScore.number_with_delimiter() );
 
-	  		}
+				}
 
-	  	} else {
+				// Post score at the end of a round no matter what
+				postScore();
 
-	  		bestScore = score;
-	  		localStorage.setItem("best-score", bestScore);
-	  		$('#best-score').text( bestScore.number_with_delimiter() );
+			} else {
 
-	  	}
+				bestScore = score;
+				localStorage.setItem("best-score", bestScore);
+				$('#best-score').text( bestScore.number_with_delimiter() );
+
+			}
 
 			$('#new-guess').hide();
 			$('#new-round').show();	
-	  	// alert("You got " + score + " points");
+			// alert("You got " + score + " points");
 			
 
-	  }
+		}
 
 	});
 	
@@ -405,17 +420,17 @@ $(document).ready(function() {
 	$('#new-round').click(function(){
 
 		// Reset our localstorage values
-	  localStorage.removeItem('score');
-	  localStorage.removeItem('guesses');
+		localStorage.removeItem('score');
+		localStorage.removeItem('guesses');
 
-	  // Reset the actual values
-	  guesses = 0;
-	  score = 0;
+		// Reset the actual values
+		guesses = 0;
+		score = 0;
 
-	  // Reset the values in the info pane
-	  updateScoreInfo();
+		// Reset the values in the info pane
+		updateScoreInfo();
 
-	  newGuess();
+		newGuess();
 
 	});
 
@@ -431,7 +446,7 @@ $(document).ready(function() {
 		} else {
 			makeMapSmall();
 			// console.log('Map is large');  
-	  }
+		}
 
 	});
 
@@ -442,8 +457,8 @@ $(document).ready(function() {
 		$('#info-container').slideToggle(200);
 		triggerResize();
 		if ( marker ) {
-  		map.setCenter(marker.getPosition());
-  	} else {
+			map.setCenter(marker.getPosition());
+		} else {
 			map.setCenter(jerseyPosition);
 		}
 
@@ -455,8 +470,8 @@ $(document).ready(function() {
 		$('#info-container').slideToggle(200);
 		triggerResize();
 		if ( marker ) {
-  		map.setCenter(marker.getPosition());
-  	} else {
+			map.setCenter(marker.getPosition());
+		} else {
 			map.setCenter(jerseyPosition);
 		}
 
@@ -469,27 +484,27 @@ $(document).ready(function() {
 	function makeMapSmall() {
 
 		$('#map-canvas').animate({ width: mapWidthSmall, height: mapHeightSmall }, 200, function(){
-	    	
-    	triggerResize();
-    	
-    	if ( marker ) {
-    		map.setCenter(marker.getPosition());
-    	} else {
+				
+			triggerResize();
+			
+			if ( marker ) {
+				map.setCenter(marker.getPosition());
+			} else {
 				map.setCenter(jerseyPosition);
 			}
 
-    });
+		});
 	}
 
 	function makeMapLarge() {
 
-	  $('#map-canvas').animate({width: mapWidthLarge, height: mapHeightLarge}, 200, function() {
-	  	
-	  	triggerResize()
+		$('#map-canvas').animate({width: mapWidthLarge, height: mapHeightLarge}, 200, function() {
+			
+			triggerResize();
 
 			if ( marker ) {
-    		map.setCenter(marker.getPosition());
-    	} else {
+				map.setCenter(marker.getPosition());
+			} else {
 				map.setCenter(jerseyPosition);
 			}
 
@@ -497,18 +512,90 @@ $(document).ready(function() {
 				map.setZoom(12);
 			} 
 
-	  });
+		});
 	}
 
-});
 
-// Prints a number with a delimiter
-Number.prototype.number_with_delimiter = function(delimiter) {
-  var number = this + '', delimiter = delimiter || ',';
-  var split = number.split('.');
-  split[0] = split[0].replace(
-      /(\d)(?=(\d\d\d)+(?!\d))/g,
-      '$1' + delimiter
-  );
-  return split.join('.');    
-};
+	// Get scores
+	function getAndLoadScores() {
+		$.ajax({
+			url: "submit.php",
+			type: "post",
+			dataType: "json",
+			data: "get_scores=true",
+			success: function (data) {
+				// console.log(data);
+				$('#leaderboard').empty();
+				$.each(data, function(index,value) {
+					// console.log(value);
+					$("#leaderboard").append('<li><img src="https://graph.facebook.com/' + value.facebook_id + '/picture" alt="' + value.name + '">' + value.name + ' <span>(' + value.score + ')</span></li>');
+				});
+			},
+			error: function (data, xhr, status) {
+				// console.log(data);
+				// console.log(xhr);
+				// console.log(status);
+			}
+		});
+	}
+
+	function postScore() {
+
+		var id = $('#post-score').data('id');
+
+		// Only post the score if we have a valid facebook id
+		if (id) {
+			
+			var dataStr = "post_score=true&score=" + bestScore + "&id=" + id;
+			// console.log(dataStr);
+
+			$.ajax({
+				url: "submit.php",
+				type: "post",
+				dataType: "json",
+				data: dataStr,
+				success: function (data) {
+					// console.log(data);
+					getAndLoadScores();
+				},
+				error: function (data) {
+					// console.log(data);
+				}
+			});		
+		} else {
+			getAndLoadScores();
+		}
+	}
+
+	// Auto post score score on load (if not then just load scores)
+	postScore();
+
+
+	// Post score
+	$('#post-score').click(postScore);
+
+
+	$('#show-leaderboard').click(function(){
+
+		$('#show-leaderboard').hide();
+		$('#hide-leaderboard').show();
+		// $('#post-score').show();
+		$('#login').show();
+		$('#leaderboard-wrap').slideToggle(200);
+
+
+	});
+
+	$('#hide-leaderboard').click(function(){
+
+		$('#show-leaderboard').show();
+		$('#hide-leaderboard').hide();
+		// $('#post-score').hide();
+		$('#login').hide();
+		$('#leaderboard-wrap').slideToggle(200);
+
+	});
+
+
+
+});
